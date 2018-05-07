@@ -49,7 +49,10 @@ int get_n() {
   f_in = fopen("../input/coords.txt", "r");
 
   int n;
-  fscanf(f_in, "%d", &n);
+  if (fscanf(f_in, "%d", &n) != 1) {
+    fprintf(stderr, "%s\n", "Incorrect input file syntax");
+    exit(1);
+  }
 
   fclose(f_in);
   return n;
@@ -61,12 +64,19 @@ vec *get_cities() {
   f_in = fopen("../input/coords.txt", "r");
 
   int n;
-  fscanf(f_in, "%d", &n);
+  if (fscanf(f_in, "%d", &n) != 1) {
+    fprintf(stderr, "%s\n", "Incorrect input file syntax");
+    exit(1);
+  }
+
   vec *cities = malloc(n * sizeof(vec));
 
   for (int i = 0; i<n; i++) {
     for (int j = 0; j<2; j++) {
-      fscanf(f_in, "%lf", &coord);
+      if (fscanf(f_in, "%lf", &coord) != 1) {
+        fprintf(stderr, "%s\n", "Incorrect input file syntax");
+        exit(1);
+      }
 
       if (j == 0) {
         cities[i].x = coord;
@@ -86,6 +96,10 @@ double dist(vec v1, vec v2) {
 
 double *get_dist_matrix(vec *cities, int n) {
   double *dist_matrix = malloc(n*n*sizeof(double));
+  if (dist_matrix == NULL) {
+    fprintf(stderr, "%s\n", "Error allocating memory");
+    exit(1);
+  }
 
   for (int i = 0; i<n; i++) {
     for (int j = 0; j<n; j++) {
@@ -101,6 +115,11 @@ int *initial_guess(int n) {
 
   // Initializing
   int *guess = malloc(n*sizeof(int));
+  if (guess == NULL) {
+    fprintf(stderr, "%s\n", "Error allocating memory");
+    exit(1);
+  }
+
   for (int i = 0; i<n; i++) {
     guess[i] = i;
   }
@@ -146,9 +165,14 @@ void read_n_anneal(double T, int steps, int simuls) {
 
   double weight, best_weight;
   int *best_route, *route, n=get_n();
-  best_route = malloc(n*sizeof(int));
   vec *cities = get_cities();
   double *dist_matrix = get_dist_matrix(cities, n);
+
+  best_route = malloc(n*sizeof(int));
+  if (best_route == NULL) {
+    fprintf(stderr, "%s\n", "Error allocating memory");
+    exit(1);
+  }
 
   assert(n>1);
 
